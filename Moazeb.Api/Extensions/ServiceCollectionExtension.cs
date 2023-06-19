@@ -1,8 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Moazeb.Api.LoggerService;
+using Moazeb.BLL.Helpers;
+using Moazeb.BLL.IService;
+using Moazeb.BLL.Services;
 using Moazeb.DAL.DataContext;
 using Moazeb.DAL.Entities;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Moazeb.Api.Extensions
 {
@@ -30,7 +39,7 @@ namespace Moazeb.Api.Extensions
         public static void ConfigureSwagger(this IServiceCollection services) =>
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ibnkhaldun", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Moazeb", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -57,5 +66,49 @@ namespace Moazeb.Api.Extensions
                     }
                 });
             });
+
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<JWT>(configuration.GetSection("JWT"));
+
+            var key = Encoding.UTF8.GetBytes(configuration["JWT:Key"]);
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                //ValidIssuer = configuration["JWT:Issuer"],
+                //ValidAudience = configuration["JWT:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+            };
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }).AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = tokenValidationParameters;
+                });
+
+            services.AddSingleton(tokenValidationParameters);
+        }
+
+        public static void ConfigureLoggerService(this IServiceCollection services) =>
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+
+        public static void ConfigureBusinessService(this IServiceCollection services)
+        {
+            services.AddTransient<IAuthService, AuthService>();
+        }
+
+        public static void ConfigureRepository(this IServiceCollection services)
+        {
+
+        }
     }
 }
