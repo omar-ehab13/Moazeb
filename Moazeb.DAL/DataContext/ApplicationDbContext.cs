@@ -31,5 +31,15 @@ namespace Moazeb.DAL.DataContext
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
         }
+
+        public DbSet<Parent> Parents { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<AttendanceState> AttendanceStates { get; set; }
+        public DbSet<Log> Logs { get; set; }
+        public DbSet<StudyingPeriod> StudyingPeriods { get; set; }
+        public DbSet<Reader> Readers { get; set; }
     }
 }
