@@ -30,6 +30,9 @@ namespace Moazeb.DAL.DataContext
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
+            builder.ApplyConfiguration(new ClassConfiguration());
+            builder.ApplyConfiguration(new SubjectConfiguration());
+            builder.ApplyConfiguration(new StudyingPeriodConfiguration());
         }
 
         public DbSet<Parent> Parents { get; set; }

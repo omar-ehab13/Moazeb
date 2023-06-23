@@ -5,45 +5,82 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Moazeb.DAL.Migrations
 {
-    public partial class CreateDomainTables : Migration
+    public partial class CreateDBWithData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "91d40bd3-4132-472a-ad82-53de5bb0d8fd");
+            migrationBuilder.EnsureSchema(
+                name: "security");
 
-            migrationBuilder.DeleteData(
+            migrationBuilder.CreateTable(
+                name: "Roles",
                 schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "affacbf4-8cd5-4849-b7b7-68fcfece7890");
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
 
-            migrationBuilder.DeleteData(
+            migrationBuilder.CreateTable(
+                name: "Users",
                 schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "bb765e3c-47d1-4441-8231-c95c5b8c6f57");
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Governorate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExternalEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
 
-            migrationBuilder.DeleteData(
+            migrationBuilder.CreateTable(
+                name: "RoleClaims",
                 schema: "security",
-                table: "UserRoles",
-                keyColumns: new[] { "RoleId", "UserId" },
-                keyValues: new object[] { "944f6b89-8ff1-4138-8642-081bc71b6c02", "3545a66b-afd0-4e80-a9cf-50377ad810c3" });
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "944f6b89-8ff1-4138-8642-081bc71b6c02");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Users",
-                keyColumn: "Id",
-                keyValue: "3545a66b-afd0-4e80-a9cf-50377ad810c3");
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoleClaims_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalSchema: "security",
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Parents",
@@ -78,6 +115,100 @@ namespace Moazeb.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_Teachers_Users_TeacherId",
                         column: x => x.TeacherId,
+                        principalSchema: "security",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserClaims",
+                schema: "security",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserClaims_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "security",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserLogins",
+                schema: "security",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_UserLogins_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "security",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                schema: "security",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalSchema: "security",
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "security",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTokens",
+                schema: "security",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_UserTokens_Users_UserId",
+                        column: x => x.UserId,
                         principalSchema: "security",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -188,15 +319,14 @@ namespace Moazeb.DAL.Migrations
                 name: "Subjects",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SubjectCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubjectCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     SubjcetName = table.Column<int>(type: "int", nullable: false),
                     ClassName = table.Column<string>(type: "nvarchar(3)", nullable: true),
                     TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subjects", x => x.Id);
+                    table.PrimaryKey("PK_Subjects", x => x.SubjectCode);
                     table.ForeignKey(
                         name: "FK_Subjects_Classes_ClassName",
                         column: x => x.ClassName,
@@ -213,25 +343,53 @@ namespace Moazeb.DAL.Migrations
                 name: "StudyingPeriods",
                 columns: table => new
                 {
-                    PeriodId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PeriodCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PeriodNo = table.Column<int>(type: "int", nullable: false),
                     DayName = table.Column<int>(type: "int", nullable: false),
-                    SubjectId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ClassName = table.Column<string>(type: "nvarchar(3)", nullable: true)
+                    SubjectCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ClassName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClassName1 = table.Column<string>(type: "nvarchar(3)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StudyingPeriods", x => x.PeriodId);
+                    table.PrimaryKey("PK_StudyingPeriods", x => x.PeriodCode);
                     table.ForeignKey(
-                        name: "FK_StudyingPeriods_Classes_ClassName",
-                        column: x => x.ClassName,
+                        name: "FK_StudyingPeriods_Classes_ClassName1",
+                        column: x => x.ClassName1,
                         principalTable: "Classes",
                         principalColumn: "ClassName");
                     table.ForeignKey(
-                        name: "FK_StudyingPeriods_Subjects_SubjectId",
-                        column: x => x.SubjectId,
+                        name: "FK_StudyingPeriods_Subjects_SubjectCode",
+                        column: x => x.SubjectCode,
                         principalTable: "Subjects",
-                        principalColumn: "Id");
+                        principalColumn: "SubjectCode");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Classes",
+                columns: new[] { "ClassName", "Grade", "ReaderId" },
+                values: new object[,]
+                {
+                    { "1A", (byte)1, null },
+                    { "1B", (byte)1, null },
+                    { "1C", (byte)1, null },
+                    { "2A", (byte)2, null },
+                    { "2B", (byte)2, null },
+                    { "2C", (byte)2, null },
+                    { "3A", (byte)3, null },
+                    { "3B", (byte)3, null },
+                    { "3C", (byte)3, null },
+                    { "4A", (byte)4, null },
+                    { "4B", (byte)4, null },
+                    { "5A", (byte)5, null },
+                    { "5B", (byte)5, null },
+                    { "6A", (byte)6, null },
+                    { "6B", (byte)6, null },
+                    { "7A", (byte)7, null },
+                    { "7B", (byte)7, null },
+                    { "8A", (byte)8, null },
+                    { "8B", (byte)8, null },
+                    { "9A", (byte)9, null }
                 });
 
             migrationBuilder.InsertData(
@@ -279,6 +437,20 @@ namespace Moazeb.DAL.Migrations
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RoleClaims_RoleId",
+                schema: "security",
+                table: "RoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                schema: "security",
+                table: "Roles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_ClassCode",
                 table: "Students",
                 column: "ClassCode");
@@ -289,14 +461,14 @@ namespace Moazeb.DAL.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudyingPeriods_ClassName",
+                name: "IX_StudyingPeriods_ClassName1",
                 table: "StudyingPeriods",
-                column: "ClassName");
+                column: "ClassName1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudyingPeriods_SubjectId",
+                name: "IX_StudyingPeriods_SubjectCode",
                 table: "StudyingPeriods",
-                column: "SubjectId");
+                column: "SubjectCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subjects_ClassName",
@@ -307,6 +479,38 @@ namespace Moazeb.DAL.Migrations
                 name: "IX_Subjects_TeacherId",
                 table: "Subjects",
                 column: "TeacherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClaims_UserId",
+                schema: "security",
+                table: "UserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_UserId",
+                schema: "security",
+                table: "UserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                schema: "security",
+                table: "UserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                schema: "security",
+                table: "Users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                schema: "security",
+                table: "Users",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AttendanceStates_Students_StudentId",
@@ -334,13 +538,37 @@ namespace Moazeb.DAL.Migrations
                 name: "Logs");
 
             migrationBuilder.DropTable(
+                name: "RoleClaims",
+                schema: "security");
+
+            migrationBuilder.DropTable(
                 name: "StudyingPeriods");
+
+            migrationBuilder.DropTable(
+                name: "UserClaims",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "UserLogins",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens",
+                schema: "security");
 
             migrationBuilder.DropTable(
                 name: "AttendanceStates");
 
             migrationBuilder.DropTable(
                 name: "Subjects");
+
+            migrationBuilder.DropTable(
+                name: "Roles",
+                schema: "security");
 
             migrationBuilder.DropTable(
                 name: "Students");
@@ -352,70 +580,14 @@ namespace Moazeb.DAL.Migrations
                 name: "Parents");
 
             migrationBuilder.DropTable(
+                name: "Users",
+                schema: "security");
+
+            migrationBuilder.DropTable(
                 name: "Readers");
 
             migrationBuilder.DropTable(
                 name: "Classes");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "93d1dfd8-c421-4063-871e-5eae84095fe4");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "a6136e7b-1099-4157-bde7-27ada0df7f01");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "c9066e37-b2b8-4af2-9c1f-dd3c86c73d74");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "UserRoles",
-                keyColumns: new[] { "RoleId", "UserId" },
-                keyValues: new object[] { "bbe78769-5bd1-4c21-915e-790f874e39fe", "f23bec6d-1f5e-41d4-a062-d2b351b46244" });
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: "bbe78769-5bd1-4c21-915e-790f874e39fe");
-
-            migrationBuilder.DeleteData(
-                schema: "security",
-                table: "Users",
-                keyColumn: "Id",
-                keyValue: "f23bec6d-1f5e-41d4-a062-d2b351b46244");
-
-            migrationBuilder.InsertData(
-                schema: "security",
-                table: "Roles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "91d40bd3-4132-472a-ad82-53de5bb0d8fd", "299f361e-af26-4273-b6ed-13f6c6993f33", "Admin", "ADMIN" },
-                    { "944f6b89-8ff1-4138-8642-081bc71b6c02", "4d1d62be-faa1-4f45-a76c-fe88be988bcd", "SuperAdmin", "SUPERADMIN" },
-                    { "affacbf4-8cd5-4849-b7b7-68fcfece7890", "fa3d6ca6-c4e3-4031-9614-becafaac13a5", "Teacher", "TEACHER" },
-                    { "bb765e3c-47d1-4441-8231-c95c5b8c6f57", "a0709f04-f8d6-408a-aee4-542f110c3551", "Parent", "PARENT" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "security",
-                table: "Users",
-                columns: new[] { "Id", "AccessFailedCount", "Address", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "ExternalEmail", "FullName", "Governorate", "ImageUrl", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3545a66b-afd0-4e80-a9cf-50377ad810c3", 0, null, null, "13950a09-c372-4907-9eb1-75f8e0c81417", "superadmin@superadmin.moazeb", true, null, "superadmin@superadmin.moazeb", null, null, true, null, "SUPERADMIN@SUPERADMIN.MOAZEB", "SUPERADMIN@SUPERADMIN.MOAZEB", "AQAAAAEAACcQAAAAEBcuJtkCF7xWqi144UJGAsMIwXK7Q0tPvQ/DiuyrRqpcrAebCFXax1F/b/CzgeVCQA==", null, false, "b889be4a-d0ad-463f-bdcf-07284c2d273c", false, "superadmin@superadmin.moazeb" });
-
-            migrationBuilder.InsertData(
-                schema: "security",
-                table: "UserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "944f6b89-8ff1-4138-8642-081bc71b6c02", "3545a66b-afd0-4e80-a9cf-50377ad810c3" });
         }
     }
 }

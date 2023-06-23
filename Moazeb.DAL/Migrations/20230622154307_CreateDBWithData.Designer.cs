@@ -12,8 +12,8 @@ using Moazeb.DAL.DataContext;
 namespace Moazeb.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230622010431_CreateDomainTables")]
-    partial class CreateDomainTables
+    [Migration("20230622154307_CreateDBWithData")]
+    partial class CreateDBWithData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -346,6 +346,108 @@ namespace Moazeb.DAL.Migrations
                     b.HasIndex("ReaderId");
 
                     b.ToTable("Classes");
+
+                    b.HasData(
+                        new
+                        {
+                            ClassName = "1A",
+                            Grade = (byte)1
+                        },
+                        new
+                        {
+                            ClassName = "1B",
+                            Grade = (byte)1
+                        },
+                        new
+                        {
+                            ClassName = "1C",
+                            Grade = (byte)1
+                        },
+                        new
+                        {
+                            ClassName = "2A",
+                            Grade = (byte)2
+                        },
+                        new
+                        {
+                            ClassName = "2B",
+                            Grade = (byte)2
+                        },
+                        new
+                        {
+                            ClassName = "2C",
+                            Grade = (byte)2
+                        },
+                        new
+                        {
+                            ClassName = "3A",
+                            Grade = (byte)3
+                        },
+                        new
+                        {
+                            ClassName = "3B",
+                            Grade = (byte)3
+                        },
+                        new
+                        {
+                            ClassName = "3C",
+                            Grade = (byte)3
+                        },
+                        new
+                        {
+                            ClassName = "4A",
+                            Grade = (byte)4
+                        },
+                        new
+                        {
+                            ClassName = "4B",
+                            Grade = (byte)4
+                        },
+                        new
+                        {
+                            ClassName = "5A",
+                            Grade = (byte)5
+                        },
+                        new
+                        {
+                            ClassName = "5B",
+                            Grade = (byte)5
+                        },
+                        new
+                        {
+                            ClassName = "6A",
+                            Grade = (byte)6
+                        },
+                        new
+                        {
+                            ClassName = "6B",
+                            Grade = (byte)6
+                        },
+                        new
+                        {
+                            ClassName = "7A",
+                            Grade = (byte)7
+                        },
+                        new
+                        {
+                            ClassName = "7B",
+                            Grade = (byte)7
+                        },
+                        new
+                        {
+                            ClassName = "8A",
+                            Grade = (byte)8
+                        },
+                        new
+                        {
+                            ClassName = "8B",
+                            Grade = (byte)8
+                        },
+                        new
+                        {
+                            ClassName = "9A",
+                            Grade = (byte)9
+                        });
                 });
 
             modelBuilder.Entity("Moazeb.DAL.Entities.Log", b =>
@@ -456,10 +558,13 @@ namespace Moazeb.DAL.Migrations
 
             modelBuilder.Entity("Moazeb.DAL.Entities.StudyingPeriod", b =>
                 {
-                    b.Property<string>("PeriodId")
+                    b.Property<string>("PeriodCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClassName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClassName1")
                         .HasColumnType("nvarchar(3)");
 
                     b.Property<int>("DayName")
@@ -468,21 +573,21 @@ namespace Moazeb.DAL.Migrations
                     b.Property<int>("PeriodNo")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubjectId")
+                    b.Property<string>("SubjectCode")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("PeriodId");
+                    b.HasKey("PeriodCode");
 
-                    b.HasIndex("ClassName");
+                    b.HasIndex("ClassName1");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("SubjectCode");
 
                     b.ToTable("StudyingPeriods");
                 });
 
             modelBuilder.Entity("Moazeb.DAL.Entities.Subject", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("SubjectCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClassName")
@@ -491,14 +596,10 @@ namespace Moazeb.DAL.Migrations
                     b.Property<int>("SubjcetName")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubjectCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("SubjectCode");
 
                     b.HasIndex("ClassName");
 
@@ -642,13 +743,15 @@ namespace Moazeb.DAL.Migrations
 
             modelBuilder.Entity("Moazeb.DAL.Entities.StudyingPeriod", b =>
                 {
-                    b.HasOne("Moazeb.DAL.Entities.Class", null)
-                        .WithMany("StudyingPeriods")
-                        .HasForeignKey("ClassName");
+                    b.HasOne("Moazeb.DAL.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassName1");
 
                     b.HasOne("Moazeb.DAL.Entities.Subject", "Subject")
                         .WithMany("Periods")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("SubjectCode");
+
+                    b.Navigation("Class");
 
                     b.Navigation("Subject");
                 });
@@ -687,8 +790,6 @@ namespace Moazeb.DAL.Migrations
             modelBuilder.Entity("Moazeb.DAL.Entities.Class", b =>
                 {
                     b.Navigation("Students");
-
-                    b.Navigation("StudyingPeriods");
                 });
 
             modelBuilder.Entity("Moazeb.DAL.Entities.Parent", b =>

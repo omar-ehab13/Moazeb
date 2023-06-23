@@ -103,7 +103,7 @@ namespace Moazeb.Api.Extensions
 
         public static void ConfigureBusinessService(this IServiceCollection services)
         {
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IEmailService, EmailService>();
         }
 

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Moazeb.BLL.DTOs.User;
+using Moazeb.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace Moazeb.BLL.Mappings
     {
         public AutoMapperMapping()
         {
-
+            CreateMap<ApplicationUser, UserDto>();
         }
     }
 }

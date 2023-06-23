@@ -12,16 +12,20 @@ namespace Moazeb.DAL.Entities
     public class StudyingPeriod
     {
         [Key]
-        public string PeriodId { get; set; } = null!;
+        public string PeriodCode { get; set; } = null!;
 
         [Required]
         public PeriodNumbers PeriodNo { get; set; }
 
         public DayOfWeek DayName { get; set; }
 
-        public string? SubjectId { get; set; }
+        public string? SubjectCode { get; set; }
 
-        [ForeignKey(nameof(SubjectId))]
+        [ForeignKey(nameof(SubjectCode))]
         public virtual Subject? Subject { get; set; }
+
+        public string? ClassName { get; set; }
+        [ForeignKey(nameof(ClassName))]
+        public Class? Class { get; set; }
     }
 }

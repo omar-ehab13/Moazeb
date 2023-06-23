@@ -20,22 +20,29 @@ namespace Moazeb.DAL.Configurations
                 {
                     Id = DefaultAuth.DefaultSuperAdminRoleId,
                     Name = RoleTypes.SuperAdmin.ToString(),
-                    NormalizedName = RoleTypes.SuperAdmin.ToString().ToUpper()
+                    NormalizedName = RoleTypes.SuperAdmin.ToString().ToUpper(),
+                    ConcurrencyStamp = DefaultAuth.DefaultSuperAdminRoleConcurrencyStamp
                 },
                 new IdentityRole
                 {
+                    Id = DefaultAuth.DefaultAdminRoleId,
                     Name = RoleTypes.Admin.ToString(),
-                    NormalizedName = RoleTypes.Admin.ToString().ToUpper()
+                    NormalizedName = RoleTypes.Admin.ToString().ToUpper(),
+                    ConcurrencyStamp = DefaultAuth.DefaultAdminRoleConcurrencyStamp
                 },
                 new IdentityRole
                 {
+                    Id = DefaultAuth.DefaultParentRoleId,
                     Name = RoleTypes.Parent.ToString(),
-                    NormalizedName = RoleTypes.Parent.ToString().ToUpper()
+                    NormalizedName = RoleTypes.Parent.ToString().ToUpper(),
+                    ConcurrencyStamp = DefaultAuth.DefaultParentRoleConcurrencyStamp
                 },
                 new IdentityRole
                 {
+                    Id = DefaultAuth.DefaultTeacherRoleId,
                     Name = RoleTypes.Teacher.ToString(),
-                    NormalizedName = RoleTypes.Teacher.ToString().ToUpper()
+                    NormalizedName = RoleTypes.Teacher.ToString().ToUpper(),
+                    ConcurrencyStamp = DefaultAuth.DefaultTeacherConcurrencyStamp
                 }
             );
         }

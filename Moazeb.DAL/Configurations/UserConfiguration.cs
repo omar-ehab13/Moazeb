@@ -15,8 +15,6 @@ namespace Moazeb.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            var passwordHasher = new PasswordHasher<ApplicationUser>();
-
             builder.HasData(
                 new ApplicationUser
                 {
@@ -30,8 +28,9 @@ namespace Moazeb.DAL.Configurations
                     TwoFactorEnabled = false, // Set TwoFactorEnabled to false
                     AccessFailedCount = 0,
                     LockoutEnabled = true,
-                    PasswordHash = passwordHasher.HashPassword(null, DefaultAuth.DefaultPassword),
-                    SecurityStamp = Guid.NewGuid().ToString(),
+                    PasswordHash = DefaultAuth.DefaultPasswordHash,
+                    SecurityStamp = DefaultAuth.DefaultSecurityStamp,
+                    ConcurrencyStamp = DefaultAuth.DefaultConcurrencyStamp,
                     FullName = DefaultAuth.DefaultSuperAdmin,
                 }    
             );

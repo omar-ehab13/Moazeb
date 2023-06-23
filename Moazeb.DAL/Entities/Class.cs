@@ -23,6 +23,5 @@ namespace Moazeb.DAL.Entities
         public virtual Reader? Reader { get; set; }
 
         public virtual ICollection<Student>? Students { get; set; }
-        public virtual ICollection<StudyingPeriod>? StudyingPeriods { get; set; }
     }
 }

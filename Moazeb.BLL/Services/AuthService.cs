@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Moazeb.BLL.DTOs.User;
 using Moazeb.BLL.Helpers;
 using Moazeb.BLL.IService;
+using Moazeb.BLL.Responses;
+using Moazeb.DAL.DataContext;
 using Moazeb.DAL.Entities;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,60 +20,80 @@ namespace Moazeb.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IEmailService _emailService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly JWT _jwt;
+        protected readonly UserManager<ApplicationUser> _userManager;
+        protected readonly IEmailService _emailService;
+        protected readonly Mapper _mapper;
+        protected readonly JWT _jwt;
 
-        public AuthService(IEmailService emailService, UserManager<ApplicationUser> userManager, IOptions<JWT> options)
+        public AuthService(UserManager<ApplicationUser> userManager, IEmailService emailService,Mapper mapper , IOptions<JWT> options)
         {
-            _emailService = emailService;
             _userManager = userManager;
+            _emailService = emailService;
+            _mapper = mapper;
             _jwt = options.Value;
         }
 
-        public Task DeleteUserAsync(string userId)
+        public async Task<AuthResponse> LoginAsync(LoginDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            // check from email and password
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                return new()
+                {
+                    Status = 404,
+                    Message = "Not Found",
+                };
+
+            // create jwt token and get user id for response
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return new()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Success = true,
+                Status = 200,
+                Message = "Success",
+                Data = userDto
+            };
         }
 
-        public Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        protected async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
         {
-            throw new NotImplementedException();
-        }
+            #region Determine Claims for the token
 
-        public Task<UserDto> GetUserAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
+            var roles = await _userManager.GetRolesAsync(user);
 
-        public Task<UserDto> LoginAsync(LoginDto loginDto)
-        {
-            throw new NotImplementedException();
-        }
+            var claims = new[]
+            {
+                new Claim("uid", user.Id),
+                new Claim("roles", roles[0]),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            };
 
-        public async Task<UserDto> RegisterUserAsync(RegisterUserDto registerUserDto)
-        {
-            // Generate random email for the user
-            var generatedEmail = await _emailService.GenerateRandomEmailAsync(registerUserDto.Name, registerUserDto.Role, exist:false);
+            #endregion
 
-            while (await _userManager.FindByEmailAsync(generatedEmail) is not null)
-                generatedEmail = await _emailService.GenerateRandomEmailAsync(registerUserDto.Name, registerUserDto.Role, exist:true);
+            #region Determine Signing Credentials
 
-            // Assign image to default image
+            var key = Encoding.UTF8.GetBytes(_jwt.Key);
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
 
-            // Add new local user
+            #endregion
 
-            // Create the user in DB
+            #region Create And Return
 
-            // Add the user to the role
+            var jwtSecurityToken = new JwtSecurityToken(
+                //issuer: _jwt.Issuer,
+                //audience: _jwt.Audience,
+                claims: claims,
+                //expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+                signingCredentials: signingCredentials);
 
-            // Return UserDto
-            throw new NotImplementedException();
-        }
+            return jwtSecurityToken;
 
-        public Task<UserDto> UpdateUserAsync(string userId, UpdateUserDto updateUserDto)
-        {
-            throw new NotImplementedException();
+            #endregion
         }
     }
 }

@@ -12,8 +12,7 @@ namespace Moazeb.DAL.Entities
 {
     public class Subject
     {
-        public string Id { get; set; } = null!;
-
+        [Key]
         public string SubjectCode { get; set; } = null!;
 
         [Required]
